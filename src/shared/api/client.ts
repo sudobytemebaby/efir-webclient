@@ -16,7 +16,7 @@ let refreshPromise: Promise<void> | null = null;
 async function refreshToken(): Promise<void> {
   if (refreshPromise) return refreshPromise;
 
-  refreshPromise = fetch(`${env.apiUrl}/auth/refresh`, {
+  refreshPromise = fetch(`${env.apiUrl}/auth/session/refresh`, {
     method: "POST",
     credentials: "include",
   })
