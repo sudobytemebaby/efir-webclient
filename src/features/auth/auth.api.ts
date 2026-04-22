@@ -1,9 +1,5 @@
 import { apiClient } from "@/shared/api/client";
-import type {
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-} from "@/features/auth/auth.types";
+import type { AuthResponse, LoginRequest, RegisterRequest } from "./auth.types";
 
 export const authApi = {
   me: () => apiClient<{ user_id: string }>("/auth/me"),
@@ -20,5 +16,7 @@ export const authApi = {
       body: JSON.stringify(data),
     }),
 
-  logout: () => apiClient<null>("/auth/logout", { method: "POST" }),
+  logout: () => apiClient<null>("/auth/session/logout", { method: "POST" }),
+
+  refresh: () => apiClient<null>("/auth/session/refresh", { method: "POST" }),
 };
