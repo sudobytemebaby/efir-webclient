@@ -4,7 +4,7 @@ import type { Room, CreateRoomRequest } from "./rooms.types";
 export const roomsApi = {
   getMyRooms: () => apiClient<Room[]>("/rooms"),
 
-  getRoom: (roomId: string) => apiClient<{ room: Room }>(`/rooms/${roomId}`),
+  getRoom: (roomId: string) => apiClient<Room>(`/rooms/${roomId}`),
 
   createRoom: (data: CreateRoomRequest) =>
     apiClient<{ room: Room }>("/rooms", {

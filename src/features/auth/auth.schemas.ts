@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.email("Некорректный email").max(255, "Email слишком длинный"),

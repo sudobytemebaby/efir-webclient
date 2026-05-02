@@ -5,18 +5,20 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { authApi } from "@/features/auth/auth.api";
+import { authApi } from "./auth.api";
 
-export const meQuery = () =>
-  queryOptions({
-    queryKey: ["auth", "me"],
-    queryFn: authApi.me,
-    staleTime: Infinity,
-    retry: false,
-  });
+export const authQueries = {
+  me: () =>
+    queryOptions({
+      queryKey: ["auth", "me"],
+      queryFn: authApi.me,
+      staleTime: Infinity,
+      retry: false,
+    }),
+};
 
 export function useMe() {
-  return useQuery(meQuery());
+  return useQuery(authQueries.me());
 }
 
 export function useLogin() {
@@ -26,7 +28,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      queryClient.setQueryData(["auth", "me"], {
+      queryClient.setQueryData(authQueries.me().queryKey, {
         user_id: data.user_id,
       });
       navigate({ to: "/rooms" });
@@ -41,7 +43,9 @@ export function useRegister() {
   return useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
-      queryClient.setQueryData(["auth", "me"], { user_id: data.user_id });
+      queryClient.setQueryData(authQueries.me().queryKey, {
+        user_id: data.user_id,
+      });
       navigate({ to: "/rooms" });
     },
   });

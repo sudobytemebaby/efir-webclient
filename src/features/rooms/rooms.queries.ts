@@ -5,7 +5,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { roomsApi } from "./rooms.api";
-import type { CreateRoomRequest } from "./rooms.types";
 
 export const roomsQueries = {
   myRooms: () =>
@@ -34,10 +33,9 @@ export function useCreateRoom() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateRoomRequest) => roomsApi.createRoom(data),
+    mutationFn: roomsApi.createRoom,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
-      queryClient.refetchQueries({ queryKey: ["rooms"] });
     },
   });
 }
@@ -46,7 +44,7 @@ export function useDeleteRoom() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (roomId: string) => roomsApi.deleteRoom(roomId),
+    mutationFn: roomsApi.deleteRoom,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },

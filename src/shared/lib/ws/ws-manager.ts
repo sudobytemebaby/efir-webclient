@@ -61,7 +61,9 @@ class WebSocketManager {
         this.ws?.close();
       };
     } catch {
-      console.error("ws connect failed — session likely expired");
+      if (this.shouldReconnect) {
+        this.scheduleReconnect();
+      }
     }
   }
 

@@ -1,7 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
 import {
   Card,
   CardContent,
@@ -10,9 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field";
-import { useLogin } from "@/features/auth/auth.queries";
-import { loginSchema } from "@/features/auth/auth.schemas";
+import { FieldGroup } from "@/shared/ui/field";
+import { FormField } from "@/shared/ui/form-field";
+import { useLogin } from "../auth.queries";
+import { loginSchema } from "../auth.schemas";
 
 export function LoginForm() {
   const login = useLogin();
@@ -25,7 +25,7 @@ export function LoginForm() {
     validators: {
       onSubmit: loginSchema,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       login.mutate(value);
     },
   });
@@ -36,6 +36,7 @@ export function LoginForm() {
         <CardTitle>Войти в Efir</CardTitle>
         <CardDescription>Введите email и пароль</CardDescription>
       </CardHeader>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -46,63 +47,38 @@ export function LoginForm() {
           <FieldGroup>
             <form.Field
               name="email"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="email"
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      disabled={login.isPending}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
+              children={(field) => (
+                <FormField
+                  field={field}
+                  label="Email"
+                  type="email"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  disabled={login.isPending}
+                />
+              )}
             />
             <form.Field
               name="password"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Пароль</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="password"
-                      placeholder="••••••••"
-                      autoComplete="current-password"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      disabled={login.isPending}
-                    />
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
+              children={(field) => (
+                <FormField
+                  field={field}
+                  label="Пароль"
+                  type="password"
+                  placeholder="********"
+                  autoComplete="current-password"
+                  disabled={login.isPending}
+                />
+              )}
             />
+
+            {/* Server error */}
             {login.error && (
               <p className="text-sm text-destructive">{login.error.message}</p>
             )}
           </FieldGroup>
         </CardContent>
+
         <CardFooter className="flex flex-col gap-3">
           <Button type="submit" className="w-full" disabled={login.isPending}>
             {login.isPending ? "Вход..." : "Войти"}
