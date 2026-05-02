@@ -34,44 +34,52 @@ async function refreshToken(): Promise<void> {
   return refreshPromise;
 }
 
+async function parseResponse<T>(res: Response): Promise<T> {
+  if (res.status === 204) return null as T;
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({
+      error: res.statusText,
+      code: "UNKNOWN",
+    }));
+    throw new ApiError(res.status, body);
+  }
+
+  return res.json();
+}
+
+function buildRequest(path: string, options: RequestInit = {}): Request {
+  const headers = new Headers(options.headers);
+
+  if (options.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  return new Request(`${env.apiUrl}${path}`, {
+    ...options,
+    credentials: "include",
+    headers,
+  });
+}
+
 export async function apiClient<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const res = await fetch(`${env.apiUrl}${path}`, {
-    ...options,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
+  const request = buildRequest(path, options);
+  const res = await fetch(request.clone());
 
   if (res.status === 401) {
     try {
       await refreshToken();
-      const retryRes = await fetch(`${env.apiUrl}${path}`, {
-        ...options,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers,
-        },
-      });
-      if (!retryRes.ok)
-        throw new ApiError(retryRes.status, await retryRes.json());
-      if (retryRes.status === 204) return null as T;
-      return retryRes.json();
-    } catch {
-      window.location.href = "/login";
-      throw new Error("session expired");
+    } catch (e) {
+      throw e instanceof ApiError
+        ? e
+        : new ApiError(401, { error: "session expired", code: "UNAUTHORIZED" });
     }
+
+    return parseResponse<T>(await fetch(buildRequest(path, options)));
   }
 
-  if (!res.ok) {
-    throw new ApiError(res.status, await res.json());
-  }
-
-  if (res.status === 204) return null as T;
-  return res.json();
+  return parseResponse<T>(res);
 }

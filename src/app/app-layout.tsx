@@ -4,16 +4,22 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/shared/ui/sidebar";
+import { Separator } from "@/shared/ui/separator";
 import { RoomsSidebar } from "@/features/rooms/components/rooms-sidebar";
 
 export function AppLayout() {
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen>
       <RoomsSidebar />
+
       <SidebarInset>
-        <div className="p-4 md:hidden">
+        {/* Mobile header */}
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4 md:hidden">
           <SidebarTrigger />
-        </div>
+          <Separator orientation="vertical" className="mr-2 h-4" />
+        </header>
+
+        {/* Page content */}
         <main className="flex-1 overflow-hidden">
           <Outlet />
         </main>

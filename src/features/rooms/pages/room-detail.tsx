@@ -10,9 +10,12 @@ export function RoomDetailPage() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header */}
       <div className="border-b px-4 py-3">
-        <h1 className="font-semibold">{data.room.name}</h1>
+        <h1 className="font-semibold">{data.name}</h1>
       </div>
+
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
         <p className="text-muted-foreground text-sm">
           Сообщения появятся здесь

@@ -1,8 +1,13 @@
 import { apiClient } from "@/shared/api/client";
-import type { AuthResponse, LoginRequest, RegisterRequest } from "./auth.types";
+import type {
+  AuthResponse,
+  LoginRequest,
+  Me,
+  RegisterRequest,
+} from "./auth.types";
 
 export const authApi = {
-  me: () => apiClient<{ user_id: string }>("/auth/me"),
+  me: () => apiClient<Me>("/auth/me"),
 
   login: (data: LoginRequest) =>
     apiClient<AuthResponse>("/auth/login", {
